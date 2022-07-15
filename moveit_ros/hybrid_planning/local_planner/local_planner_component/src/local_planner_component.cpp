@@ -417,13 +417,12 @@ void LocalPlannerComponent::executeIteration()
           // Local solution publisher is defined by the local constraint solver plugin
         }
         rclcpp::Duration waypoint_duration = rclcpp::Duration(local_solution.points.at(0).time_from_start);
-        // rclcpp::Duration latency_comp = waypoint_duration.nanoseconds() + rclcpp::Duration::from_seconds(config_.latency_compensation_seconds).nanoseconds();
+        rclcpp::Duration latency_comp = waypoint_duration.nanoseconds() + rclcpp::Duration::from_seconds(config_.latency_compensation_seconds).nanoseconds();
 
         // Apply latency compensation to publish a bit sooner. This compensates for ROS message latency
         // so the controller command arrives exactly when it should.
-        // waypoint_duration = rclcpp::Duration(latency_comp);
-        waypoint_duration = waypoint_duration.nanoseconds() + rclcpp::Duration::from_seconds(config_.latency_compensation_seconds).nanoseconds();
-        time_to_send_next_wypt_ = current_time + waypoint_duration;
+        // waypoint_duration = latency_comp;
+        time_to_send_next_wypt_ = current_time + latency_comp;
         prev_command_ = local_solution;
       }
       return;
